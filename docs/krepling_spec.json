@@ -1,0 +1,824 @@
+=== HERO DETAILS ===
+{
+  "title": "The world\u2019s most powerful commerce platform.",
+  "subtitle": "Build your store using clicks instead of code.",
+  "description": "Your online store should be a sales channel, not an engineering challenge.",
+  "link": {
+    "label": "Request a demo",
+    "url": "https://content.krepling.com/book-a-krepling-demo",
+    "isExternal": true
+  },
+  "media": {
+    "video": {
+      "asset": "https://cdn.sanity.io/files/2unoqsa0/production/f1834828a2d905c3d6d9eccbb47f5712de04462b.mp4"
+    },
+    "type": "video"
+  }
+}
+
+=== NAVIGATION DETAILS ===
+{
+  "items": [
+    {
+      "_type": "link",
+      "label": "Features",
+      "url": "/features",
+      "isExternal": false
+    },
+    {
+      "_type": "link",
+      "label": "Pricing",
+      "url": "/pricing",
+      "isExternal": false
+    },
+    {
+      "_type": "dropdown",
+      "label": "Company",
+      "links": [
+        {
+          "label": "Blog",
+          "url": "/blog",
+          "isExternal": false
+        },
+        {
+          "label": "About",
+          "url": "/about",
+          "isExternal": false
+        },
+        {
+          "label": "Careers",
+          "url": "/careers",
+          "isExternal": false
+        }
+      ]
+    },
+    {
+      "_type": "dropdown",
+      "label": "Resources",
+      "links": [
+        {
+          "label": "Status",
+          "url": "https://www.krepling.com/about",
+          "isExternal": true
+        },
+        {
+          "label": "Support",
+          "url": "https://content.krepling.com/contact-us",
+          "isExternal": true
+        },
+        {
+          "label": "Guides",
+          "url": "https://app.krepling.com/index.php?rp=/knowledgebase",
+          "isExternal": true
+        },
+        {
+          "label": "Platform Updates",
+          "url": "https://app.krepling.com/index.php?rp=/announcements",
+          "isExternal": true
+        }
+      ]
+    }
+  ],
+  "rightLink": {
+    "label": "Log in",
+    "url": "https://app.krepling.com/index.php/login",
+    "isExternal": true
+  },
+  "rightButton": {
+    "label": "Get started",
+    "url": "/pricing",
+    "isExternal": false
+  }
+}
+
+=== 6 COMPONENTS ===
+
+--- COMPONENT 0: productShowcase ---
+{
+  "fullscreenMedia": {
+    "_type": "fullscreenMedia",
+    "variant": "workflows"
+  },
+  "_key": "12a1d2d0c2d5",
+  "_type": "productShowcase",
+  "sectionIntroText": {
+    "content": [
+      {
+        "_key": "71b6dca41cf8",
+        "markDefs": [],
+        "children": [
+          {
+            "_key": "379005bc97fe",
+            "_type": "span",
+            "marks": [],
+            "text": "Build beautiful commerce experiences and customer journeys with "
+          },
+          {
+            "_type": "span",
+            "marks": [
+              "em"
+            ],
+            "text": "powerful, easy-to-build, workflows.",
+            "_key": "aa763398bef2"
+          }
+        ],
+        "_type": "block",
+        "style": "normal"
+      }
+    ],
+    "_type": "sectionIntroText",
+    "variant": "workflows"
+  },
+  "stackedCards": {
+    "title": null,
+    "cards": [
+      {
+        "description": "Expand the capabilities of your store in minutes with a wide selection of integrations, unlocking new markets and demographics with no development effort.",
+        "mediaType": "lottie",
+        "image": null,
+        "imageAsBackground": null,
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/e511a29f2ab98b9c0c840148c327f33fa04dfb80.json",
+        "title": "Integrate"
+      },
+      {
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/6897998f8753440e65b2047e9dea7b61d4576fc7.json",
+        "title": "Personalized experiences",
+        "description": "Create a frictionless buyer journey in minutes. Add as many commerce automations as you need and reach your customers even after they have left your store.",
+        "mediaType": "lottie",
+        "image": null,
+        "imageAsBackground": false
+      },
+      {
+        "mediaType": "lottie",
+        "image": null,
+        "imageAsBackground": null,
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/8e9d3ae87194d21f397c16a2e7d424666758f237.json",
+        "title": "Data driven",
+        "description": "Full observability into your e-commerce tech stack, uncovering revenue opportunities, sales recovery rates, and more.\n\n\n\n\n\n"
+      }
+    ]
+  },
+  "theme": "light",
+  "productHeader": {
+    "_type": "productHeader",
+    "icon": "workflows",
+    "title": "Workflows"
+  }
+}
+
+--- COMPONENT 1: productShowcase ---
+{
+  "sectionIntroText": {
+    "_type": "sectionIntroText",
+    "variant": "storefront",
+    "content": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "_key": "725ecc827e47",
+        "markDefs": [],
+        "children": [
+          {
+            "marks": [],
+            "text": "Turn a vision into sales. Design and build a store that",
+            "_key": "6a33eaff7b930",
+            "_type": "span"
+          },
+          {
+            "_type": "span",
+            "marks": [
+              "em"
+            ],
+            "text": " speaks to your customers.",
+            "_key": "220dac44d9e7"
+          }
+        ]
+      }
+    ]
+  },
+  "stackedCards": {
+    "title": null,
+    "cards": [
+      {
+        "title": "Fully customizable store builder",
+        "description": "Harness the power of building on a visual canvas. Krepling transforms your designs into clean, semantic code, ready for your customers in seconds \u2013 no coding required.",
+        "mediaType": "lottie",
+        "image": null,
+        "imageAsBackground": null,
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/31bf566c3b89930d9158b7446fcff7a62906ea79.json"
+      },
+      {
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/57940927c882b3d7441f815601b1ef5404c33706.json",
+        "title": "Full payments and, logistics freedom",
+        "description": "Build unbelievably simple and personalized payment and shipping journeys for your customers, wherever they are in the world.",
+        "mediaType": "lottie",
+        "image": null,
+        "imageAsBackground": null
+      },
+      {
+        "title": "Coming Soon \u2013 AI Store Generator",
+        "description": "Unleash creativity beyond traditional templates. Utilize AI to instantly craft entirely unique, tailor-made stores for your brand in seconds.",
+        "mediaType": "lottie",
+        "image": null,
+        "imageAsBackground": null,
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/641e114d492ff372ee0b16c59f889f75c9e4f0d3.json"
+      }
+    ]
+  },
+  "theme": "dark",
+  "_key": "30ba6434e2fc",
+  "_type": "productShowcase",
+  "productHeader": {
+    "title": "Storefront",
+    "_type": "productHeader",
+    "icon": "storefront"
+  },
+  "fullscreenMedia": {
+    "variant": "storefront",
+    "_type": "fullscreenMedia"
+  }
+}
+
+--- COMPONENT 2: productShowcase ---
+{
+  "theme": "light",
+  "productHeader": {
+    "_type": "productHeader",
+    "icon": "dashboard",
+    "title": "Dashboard"
+  },
+  "fullscreenMedia": {
+    "_type": "fullscreenMedia",
+    "variant": "dashboard"
+  },
+  "sectionIntroText": {
+    "_type": "sectionIntroText",
+    "variant": "dashboard",
+    "content": [
+      {
+        "style": "normal",
+        "_key": "2ea8edb467a4",
+        "markDefs": [],
+        "children": [
+          {
+            "_type": "span",
+            "marks": [],
+            "text": "Unparalleled visibility across your business. Track, evaluate, and adapt, ",
+            "_key": "bc2f1266f83c0"
+          },
+          {
+            "marks": [
+              "em"
+            ],
+            "text": "all in one place.",
+            "_key": "cf708966a1f4",
+            "_type": "span"
+          }
+        ],
+        "_type": "block"
+      }
+    ]
+  },
+  "_key": "6a1a2b90139c",
+  "_type": "productShowcase",
+  "stackedCards": {
+    "title": null,
+    "cards": [
+      {
+        "image": null,
+        "imageAsBackground": false,
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/63c33dbcb9340a6a0dc8a8576bdef3fc4afa6646.json",
+        "title": "Data driven observability",
+        "description": "Have complete visibility into your entire e-commerce tech stack, uncovering unique omnichannel capabilities, store performance trends, and hidden revenue opportunities.",
+        "mediaType": "lottie"
+      },
+      {
+        "title": "Get insights",
+        "description": "Evaluate every part of the customer experience with extensive analytics. Use insights to better understand your customers.",
+        "mediaType": "lottie",
+        "image": null,
+        "imageAsBackground": false,
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/796798cb5e57c6a0748994a3ce7a427c2a250eaf.json"
+      },
+      {
+        "title": "Plan and adapt",
+        "description": "Leverage the data across your site and execute automated strategies for sales and marketing purposes.",
+        "mediaType": "lottie",
+        "image": null,
+        "imageAsBackground": false,
+        "lottie": "https://cdn.sanity.io/files/2unoqsa0/production/df94c1204e30891ee4a698a431fe060f45063184.json"
+      }
+    ]
+  }
+}
+
+--- COMPONENT 3: integrationsOverview ---
+{
+  "title": "The power of integrations plus all the essentials.",
+  "topMarquee": {
+    "images": [
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-63220a3ea71b874b63772da1b80990d6892dc5ac-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "height": 80,
+            "_type": "sanity.imageDimensions",
+            "width": 260,
+            "aspectRatio": 3.25
+          },
+          "alt": "Klarna logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(249, 194, 207)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-9168ef2e03d8d8fd59f946a9932fbb4f2aafd26c-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "_type": "sanity.imageDimensions",
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80
+          },
+          "alt": "Stripe logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(99, 91, 255)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-4e50329774e76e23cc738310a3a2044551cdbea0-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "aspectRatio": 3.25,
+            "height": 80,
+            "_type": "sanity.imageDimensions",
+            "width": 260
+          },
+          "alt": "Mailchimp logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(255, 224, 27)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-08a12aa22e9d1e2b53d4a283daafe44a9702ffd2-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "_type": "sanity.imageDimensions",
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80
+          },
+          "alt": "Slack logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(75, 21, 76)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_type": "reference",
+            "_ref": "image-74d59adda69a20115d9762a9a8c2c31fa7590924-260x80-svg"
+          },
+          "dimensions": {
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80,
+            "_type": "sanity.imageDimensions"
+          },
+          "alt": "SendGrid logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(153, 225, 244)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-3a882b8fd4d3ba4292c285dcf0fa6513bdc2ea03-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "_type": "sanity.imageDimensions",
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80
+          },
+          "alt": "Shippo logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(147, 211, 62)"
+        }
+      }
+    ]
+  },
+  "bottomMarquee": {
+    "images": [
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-929116d09ee1d60f068aabf72507f8cdc3515cbe-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "_type": "sanity.imageDimensions",
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80
+          },
+          "alt": "Meta logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(6, 6, 6)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-3754ceeacb95886ac68577043a71f33b3520b9ef-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "aspectRatio": 3.25,
+            "height": 80,
+            "_type": "sanity.imageDimensions",
+            "width": 260
+          },
+          "alt": "Twilio logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(242, 47, 70)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_type": "reference",
+            "_ref": "image-354315ed3b94f658086913fd45addf389280d502-260x80-svg"
+          },
+          "dimensions": {
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80,
+            "_type": "sanity.imageDimensions"
+          },
+          "alt": "Zendesk logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(3, 54, 61)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-404086e59b42c9474da5ba5db9fcf806435da49f-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80,
+            "_type": "sanity.imageDimensions"
+          },
+          "alt": "Xero"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(26, 180, 215)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-ec91dde79122851e1ec9cf5ddca15f9131dfaf2d-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "_type": "sanity.imageDimensions",
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80
+          },
+          "alt": "PayPal logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(255, 196, 57)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_type": "reference",
+            "_ref": "image-ff76328997d7859bfa8e493406060fcd5c7a497a-260x80-svg"
+          },
+          "dimensions": {
+            "_type": "sanity.imageDimensions",
+            "width": 260,
+            "aspectRatio": 3.25,
+            "height": 80
+          },
+          "alt": "HubSpot logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(255, 122, 89)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-3ed3dcd04fa52728be6927c2589b8a2041ecd7cf-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "aspectRatio": 3.25,
+            "height": 80,
+            "_type": "sanity.imageDimensions",
+            "width": 260
+          },
+          "alt": "Salesforce logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(241, 241, 241)"
+        }
+      },
+      {
+        "image": {
+          "asset": {
+            "_ref": "image-14155ece8fcf3cfcdac99c2c44fda9102a0e5eae-260x80-svg",
+            "_type": "reference"
+          },
+          "dimensions": {
+            "aspectRatio": 3.25,
+            "height": 80,
+            "_type": "sanity.imageDimensions",
+            "width": 260
+          },
+          "alt": "Aliexpress logo"
+        },
+        "backgroundColor": {
+          "label": "Custom",
+          "value": "rgb(228, 50, 37)"
+        }
+      }
+    ]
+  },
+  "benefits": [
+    {
+      "label": "Cloud hosting",
+      "icon": "CloudHosting"
+    },
+    {
+      "label": "shipping logistics",
+      "icon": "ShippingLogistics"
+    },
+    {
+      "label": "multi-domain support",
+      "icon": "MultiDomainSupport"
+    },
+    {
+      "label": "product variants",
+      "icon": "ProductVariants"
+    },
+    {
+      "label": "fraud protection",
+      "icon": "FraudProtection"
+    },
+    {
+      "label": "multi-country support",
+      "icon": "SingleFlag"
+    },
+    {
+      "label": "marketing automations",
+      "icon": "MarketingAutomations"
+    },
+    {
+      "label": "account management",
+      "icon": "AccountManagement"
+    },
+    {
+      "label": "customer insights",
+      "icon": "CustomerInsights"
+    },
+    {
+      "label": "data-driven actions",
+      "icon": "DataDrivenActions"
+    }
+  ],
+  "_key": "06ad1620aca5",
+  "_type": "integrationsOverview"
+}
+
+--- COMPONENT 4: contextualCTA ---
+{
+  "_key": "afe1b029b448",
+  "_type": "contextualCTA",
+  "copy": "All the essential e-commerce features to grow your business",
+  "cta": {
+    "label": "Discover features",
+    "url": "/features",
+    "isExternal": false
+  },
+  "backgroundColor": "white"
+}
+
+--- COMPONENT 5: listAccordion ---
+{
+  "_key": "893fe86d739a",
+  "_type": "listAccordion",
+  "title": "Frequently Asked Questions",
+  "items": [
+    {
+      "title": "What do I need to build a store with Krepling?",
+      "description": "Krepling is an all-in-one centralized commerce platform that allows you to turn your idea into any type of online business.\n\nAcross the globe, entrepreneurs and businesses of all sizes use Krepling to build, grow, and manage their business online.\n\nFrom retail to freelancing, to subscriptions and events, to even digital products and educational courses/programs, Krepling has you covered."
+    },
+    {
+      "title": "Can I use my existing domain?",
+      "description": "Yes, you can use your existing domain name with Krepling.\n\nSimply link it from your store's admin. If you're still in need of a domain name, you can purchase one through Krepling or a third-party provider, or take advantage of a free domain with a 'mykrepling.com' suffix.\n"
+    },
+    {
+      "title": "Can I migrate an existing store from another platform?",
+      "description": "Yes, migrating your existing online store to Krepling is possible and streamlined for convenience. Our platform offers migration tools and support to help transfer your product listings, customer data, and past orders securely. We also have dedicated customer service teams who can assist you throughout the process to ensure a smooth transition."
+    },
+    {
+      "title": "In which markets can I sell products with Krepling?",
+      "description": "Krepling is designed to help you sell products globally. With our integrated payment gateways and shipping partners, you can reach customers in various international markets. Our platform supports cross-border transactions, and we provide resources to help you comply with local regulations and tax laws."
+    },
+    {
+      "title": "What languages does Krepling support?",
+      "description": "Krepling is built to support multiple languages, enabling you to reach a wider audience. Our platform allows you to create a multi-lingual storefront so you can connect with customers in their native language, providing a more personalized shopping experience. Language support is continually expanding, and we aim to cater to as many languages as possible."
+    }
+  ]
+}
+
+=== FOOTER DETAILS ===
+{
+  "copyright": "Copyright \u00a9 2024 Krepling Inc. All rights reserved.",
+  "title": "Build your e-commerce storefront today",
+  "primaryCta": {
+    "label": "Get started",
+    "url": "/pricing",
+    "isExternal": false
+  },
+  "secondaryCta": {
+    "label": "Request a demo",
+    "url": "https://content.krepling.com/book-a-krepling-demo",
+    "isExternal": true
+  },
+  "social": [
+    {
+      "name": "facebook",
+      "link": {
+        "label": null,
+        "url": "https://www.facebook.com/krepling",
+        "isExternal": true
+      }
+    },
+    {
+      "name": "twitter",
+      "link": {
+        "label": null,
+        "url": "https://twitter.com/krepling",
+        "isExternal": true
+      }
+    },
+    {
+      "name": "linkedin",
+      "link": {
+        "label": null,
+        "url": "https://www.linkedin.com/company/krepling/",
+        "isExternal": true
+      }
+    },
+    {
+      "name": "youtube",
+      "link": {
+        "label": null,
+        "url": "https://www.youtube.com/channel/UCmUe-j9kIt3rGS04A9okXbA?view_as=subscriber",
+        "isExternal": true
+      }
+    },
+    {
+      "name": "instagram",
+      "link": {
+        "label": null,
+        "url": "https://www.instagram.com/kreplingdotcom/",
+        "isExternal": true
+      }
+    }
+  ],
+  "image": {
+    "asset": {
+      "_ref": "image-3608702cd5fd595eeb8d3240c6314d970eefdd61-2860x2080-png",
+      "_type": "reference"
+    },
+    "dimensions": {
+      "aspectRatio": 1.375,
+      "height": 2080,
+      "_type": "sanity.imageDimensions",
+      "width": 2860
+    },
+    "alt": " Footer image"
+  },
+  "linkColumns": [
+    {
+      "title": "Products",
+      "links": [
+        {
+          "label": "Features",
+          "url": "/features",
+          "isExternal": false
+        },
+        {
+          "label": "Pricing",
+          "url": "/pricing",
+          "isExternal": false
+        }
+      ]
+    },
+    {
+      "title": "Company",
+      "links": [
+        {
+          "label": "Blog",
+          "url": "/blog",
+          "isExternal": false
+        },
+        {
+          "label": "About",
+          "url": "/about",
+          "isExternal": false
+        },
+        {
+          "label": "Careers",
+          "url": "/careers",
+          "isExternal": false
+        }
+      ]
+    },
+    {
+      "title": "Resources",
+      "links": [
+        {
+          "label": "Status",
+          "url": "https://www.krepling.com/about",
+          "isExternal": true
+        },
+        {
+          "label": "Support",
+          "url": "https://content.krepling.com/contact-us",
+          "isExternal": true
+        },
+        {
+          "label": "Guide",
+          "url": "https://app.krepling.com/index.php/knowledgebase",
+          "isExternal": true
+        },
+        {
+          "label": "Platform Updates",
+          "url": "https://app.krepling.com/index.php?rp=/announcements",
+          "isExternal": true
+        },
+        {
+          "label": "Legal",
+          "url": "/legal-overview",
+          "isExternal": false
+        }
+      ]
+    }
+  ],
+  "email": {
+    "label": "Contact Us",
+    "url": "https://content.krepling.com/contact-us"
+  },
+  "location": {
+    "label": "Chattanooga, Tennesee",
+    "url": "https://www.google.com/maps/place/Chattanooga,+TN,+EUA/@35.0982955,-85.238691,11z/data=!3m1!4b1!4m6!3m5!1s0x886060408a83e785:0x2471261f898728aa!8m2!3d35.0457984!4d-85.3093995!16zL20vMHB6cHo?entry=ttu"
+  }
+}
