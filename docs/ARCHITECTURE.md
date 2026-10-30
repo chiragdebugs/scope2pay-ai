@@ -1,143 +1,187 @@
 # Scope2Pay AI — System Architecture
 
-**Version:** 1.0.0  
+**Version:** 2.0.0  
 **Status:** Approved for Phase 0  
-**Reference Document:** [PRD.md](./PRD.md) | [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
+**Reference Documents:** [PRD.md](./PRD.md) | [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) | [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
 
 ---
 
 ## 1. Architecture Overview
 
-Scope2Pay AI is engineered as a modern, type-safe full-stack monorepo designed for high throughput, strict financial consistency, and sub-second response times. The platform orchestrates complex AI prompt pipelines, stateful escrow transactions, and a multi-experience frontend (Marketing, Dashboard, AI Workspace, Client Portal).
+Scope2Pay AI is architected as a decoupled modern full-stack platform:
+- **Frontend Layer:** React 18+ with TypeScript and Vite, styled with Tailwind CSS v4 and the Krepling atelier design system, deployed globally on **Vercel**.
+- **Backend API Layer:** Asynchronous Python with FastAPI, delivering high-performance REST endpoints, AI orchestration, and PayPal verification, deployed on **Render**.
+- **Data & Auth Layer:** **Supabase PostgreSQL** for relational persistence and **Supabase Auth** for identity management with Row-Level Security (RLS).
+- **AI Inference Engine:** **Groq API** providing ultra-fast Llama-3 / Mixtral completions for proposal and milestone generation.
+- **Payment Verification:** **PayPal REST API** (v2/checkout/orders) handling direct invoice settlements and webhook reconciliation.
 
 ```mermaid
 graph TD
-    ClientBrowser[Client / Freelancer Browser] --> Cloudflare[Cloudflare CDN / Edge WAF]
-    Cloudflare --> NextApp[Next.js App Router (apps/web)]
+    UserBrowser[User / Client Browser] --> VercelEdge[Vercel Edge CDN]
+    VercelEdge --> ReactApp[React + TypeScript + Vite (apps/web)]
     
-    subgraph "Application Layer (apps/web)"
+    subgraph "Frontend Layer (apps/web on Vercel)"
         Marketing[Marketing Landing]
         Dashboard[Freelancer Dashboard]
         AIWorkspace[AI Workspace]
-        ClientPortal[Client Portal (Magic Link Auth)]
+        ClientPortal[Client Portal]
+        UIComponents[Shared UI Components / Krepling Design Tokens]
     end
     
-    NextApp --> ServerActions[Server Actions & API Routes]
+    ReactApp -->|REST / JWT Auth| FastAPIServer[FastAPI Server (apps/api on Render)]
+    ReactApp -->|Direct Auth & Realtime| SupabaseService[Supabase Platform]
     
-    subgraph "Shared Packages (packages/*)"
-        UI[packages/ui (Design System)]
-        AICore[packages/ai (Scoping Engine)]
-        DBCore[packages/database (ORM & Schema)]
-        Config[packages/config]
+    subgraph "Backend Layer (apps/api on Render)"
+        FastAPIServer --> AuthMiddleware[Supabase JWT Verification]
+        FastAPIServer --> AIOrchestrator[Groq AI Scoping Engine]
+        FastAPIServer --> InvoiceService[Invoice & Billing Engine]
+        FastAPIServer --> PayPalService[PayPal REST API Client]
+        FastAPIServer --> MessagingService[Conversation & Messaging Service]
     end
     
-    ServerActions --> AICore
-    ServerActions --> DBCore
-    ServerActions --> StripeService[Stripe Connect & Webhooks]
-    
-    AICore --> GeminiAPI[Google Gemini 1.5 Pro / Flash]
-    DBCore --> Postgres[(PostgreSQL Database)]
-    ServerActions --> Redis[(Upstash Redis - Rate Limiting & Queue)]
-    ServerActions --> EmailService[Resend Email API]
+    subgraph "External Providers & Cloud Data"
+        SupabaseService --> SupabaseDB[(Supabase PostgreSQL with RLS)]
+        SupabaseService --> SupabaseAuth[Supabase Auth]
+        AIOrchestrator --> GroqAPI[Groq API (Llama-3 / Mixtral)]
+        PayPalService --> PayPalAPI[PayPal REST API v2]
+        PayPalAPI -->|Webhooks| FastAPIServer
+    end
 ```
 
 ---
 
 ## 2. Monorepo Structure
 
-The codebase is organized as a Turborepo-managed monorepo utilizing `pnpm`:
+The monorepo organizes the React/Vite client and the Python/FastAPI service side by side:
 
 ```text
 scope2pay-ai/
 ├── apps/
-│   ├── web/                     # Full-stack Next.js 15+ App Router application
-│   │   ├── app/
-│   │   │   ├── (marketing)/     # Landing page, Pricing, Features, FAQ, Footer
-│   │   │   ├── (dashboard)/     # Authenticated Freelancer management space
-│   │   │   ├── (ai-workspace)/  # AI scoping interface, prompt intake & editor
-│   │   │   ├── (portal)/        # Client magic-link milestone & payment portal
-│   │   │   └── api/             # Webhook handlers (Stripe, Resend) & REST endpoints
-│   │   └── public/              # Static assets & 3D decorative illustrations
+│   ├── web/                         # React + TypeScript + Vite frontend
+│   │   ├── index.html               # Vite HTML entry
+│   │   ├── vite.config.ts           # Vite configuration
+│   │   ├── package.json             # Frontend dependencies
+│   │   ├── src/
+│   │   │   ├── assets/              # Static assets and 3D decorative illustrations
+│   │   │   ├── components/          # Reusable Krepling UI components (atoms/molecules)
+│   │   │   ├── features/            # Feature modules
+│   │   │   │   ├── marketing/       # Landing page, Pricing, Features, FAQ, Footer
+│   │   │   │   ├── dashboard/       # Freelancer project & financial management
+│   │   │   │   ├── ai-workspace/    # Groq-powered prompt intake & editor
+│   │   │   │   ├── portal/          # Client magic-link proposal & invoice portal
+│   │   │   │   └── messaging/       # Conversation threads
+│   │   │   ├── hooks/               # Custom React hooks (auth, query, realtime)
+│   │   │   ├── lib/                 # Supabase client, API client, utils
+│   │   │   └── styles/              # Design tokens and Tailwind v4 theme
+│   │   └── tsconfig.json
+│   └── api/                         # Python + FastAPI backend
+│       ├── main.py                  # FastAPI application entrypoint
+│       ├── requirements.txt         # Python dependencies
+│       ├── pyproject.toml           # Tooling & metadata configuration
+│       ├── app/
+│       │   ├── api/                 # API route controllers
+│       │   │   ├── v1/
+│       │   │   │   ├── auth.py      # Auth & role verification
+│       │   │   │   ├── clients.py   # Client CRM endpoints
+│       │   │   │   ├── proposals.py # Proposal generation & approval
+│       │   │   │   ├── projects.py  # Projects & milestones
+│       │   │   │   ├── invoices.py  # Invoice generation & tracking
+│       │   │   │   ├── payments.py  # PayPal order creation & capture
+│       │   │   │   ├── ai.py        # Groq scoping & prompt endpoints
+│       │   │   │   ├── messages.py  # Conversation & messaging endpoints
+│       │   │   │   └── webhooks.py  # PayPal webhook listeners
+│       │   ├── core/                # App config, security, Supabase client
+│       │   ├── models/              # Pydantic schemas (request/response)
+│       │   └── services/            # Groq AI, PayPal SDK, Invoice calculations
+│       └── tests/                   # Pytest test suite
 ├── packages/
-│   ├── ui/                      # Shared component library strictly implementing DESIGN.md
-│   │   ├── src/components/      # Buttons, Cards, Inputs, Modals, TabStrips
-│   │   └── src/styles/          # Tokens, CSS custom properties, and Tailwind v4 definitions
-│   ├── database/                # Database schema, Prisma/Drizzle models, seeds, migrations
-│   ├── ai/                      # AI Scoping Prompts, Zod output schemas, streaming engines
-│   └── config/                  # Shared TypeScript, ESLint, Prettier, Tailwind configurations
-├── docs/                        # Architecture, PRD, Security, Database, Roadmap specs
-├── DESIGN.md                    # Authoritative Krepling visual design system reference
-├── package.json                 # Monorepo root workspace configuration
-├── turbo.json                   # Turborepo task pipeline configuration
-└── pnpm-workspace.yaml          # Monorepo workspace configuration
+│   └── ui/                          # Shared design tokens & CSS system
+│       ├── tokens.css               # Authoritative CSS variables from DESIGN.md
+│       └── index.ts                 # Shared style definitions
+├── docs/                            # Architectural, PRD, Security & Schema specs
+├── DESIGN.md                        # Authoritative Krepling visual design system reference
+├── .gitignore                       # Polyglot gitignore (Node, Python, Vite, etc.)
+└── README.md                        # Project documentation
 ```
 
 ---
 
-## 3. Technology Stack
+## 3. Technology Stack & Rationale
 
-| Layer | Technology | Rationale |
-|---|---|---|
-| **Monorepo Management** | Turborepo + pnpm | Blazing fast build caching, zero-dependency symlinks, unified dependencies. |
-| **Web Framework** | Next.js 15 (App Router, React 19) | Server Components for instant LCP, SEO-optimized marketing, secure Server Actions. |
-| **Styling & Design System** | Tailwind CSS v4 + Vanilla CSS Variables | Zero runtime overhead, strict token adherence to [DESIGN.md](../DESIGN.md). |
-| **Database & ORM** | PostgreSQL + Prisma / Drizzle ORM | ACID-compliant transactional consistency for financial escrow states; type-safe queries. |
-| **Authentication** | Supabase Auth / Auth.js (OAuth + Magic Links) | Secure sessions for freelancers; passwordless cryptographically signed tokens for clients. |
-| **AI Scoping Engine** | Google Gemini 1.5 Pro / Flash SDK | Massive context window (1M+ tokens for RFP uploads), low latency, structured JSON mode. |
-| **Payments & Escrow** | Stripe Connect (Custom / Express) | Compliance, automated 1099s, escrow authorization holds, multi-currency support. |
-| **Caching & Rate Limiting** | Upstash Redis | Edge-compatible rate-limiting to prevent AI prompt abuse and DDoS. |
-| **Transactional Email** | Resend + React Email | High deliverability for contract approvals, escrow deposit receipts, and notifications. |
+| Layer | Chosen Technology | Deployment | Rationale |
+|---|---|---|---|
+| **Frontend Framework** | React 18+ (TypeScript) | **Vercel** | Industry-standard declarative component model, rich ecosystem, instant global CDN delivery. |
+| **Frontend Tooling** | Vite 5+ | **Vercel** | Lightning-fast HMR, optimized production tree-shaking, lightweight modern build pipeline. |
+| **Backend Framework** | Python 3.11+ / FastAPI | **Render** | Asynchronous execution, automatic OpenAPI/Swagger documentation, native Pydantic validation. |
+| **Database** | Supabase PostgreSQL | **Supabase** | Managed PostgreSQL 16+, high concurrency, connection pooling, and built-in Row-Level Security. |
+| **Authentication** | Supabase Auth | **Supabase** | Seamless JWT issuance, role management (`FREELANCER`, `CLIENT`), and cryptographically signed tokens. |
+| **AI Provider** | Groq API | **Groq Cloud** | Ultra-low latency LPU inference (Llama-3 70B / Mixtral 8x7B) delivering instant proposal generation. |
+| **Payment Gateway** | PayPal REST API | **PayPal Cloud** | Universal global client payment support (Cards, PayPal balance, Pay in 4) and reliable webhooks. |
+| **Styling & Tokens** | Tailwind CSS v4 + Vanilla CSS | **Vercel** | Strict adherence to [DESIGN.md](../DESIGN.md) without heavy runtime CSS-in-JS dependencies. |
 
 ---
 
-## 4. Core Subsystem Workflows
+## 4. Key Subsystem Workflows
 
-### 4.1 AI Scope Generation Pipeline
+### 4.1 AI Proposal & Scope Generation with Human-in-the-Loop Approval
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Freelancer
-    participant UI as AI Workspace
-    participant Server as Server Action
-    participant AI as Gemini 1.5 Pro
-    participant DB as Postgres DB
+    participant Web as React App (AI Workspace)
+    participant API as FastAPI Backend
+    participant Groq as Groq API (LPU)
+    participant DB as Supabase PostgreSQL
 
-    Freelancer->>UI: Enter rough project brief / client messages
-    UI->>Server: submitScopePrompt(brief, rateStructure)
-    Server->>AI: Structured Prompt (Zod schema constraint)
-    AI-->>Server: JSON Stream (Milestones, Deliverables, Exclusions, Pricing)
-    Server-->>UI: Real-time optimistic UI render
-    Freelancer->>UI: Review & approve / fine-tune scope
-    UI->>Server: saveScopeDraft(scopeData)
-    Server->>DB: Insert Project & Milestones in DRAFT status
-    Server-->>UI: Scope ready (Publish & Generate Client Magic Link)
+    Freelancer->>Web: Input client brief / project notes
+    Web->>API: POST /api/v1/ai/generate-scope (prompt, client_id)
+    API->>Groq: Generate structured scope (Pydantic JSON schema)
+    Groq-->>API: Streamed structured JSON (Summary, Milestones, Deliverables, Out-of-Scope)
+    API-->>Web: Structured draft response
+    Note over Freelancer,Web: Human-Approval Gate: Freelancer reviews, edits line items, adjusts pricing
+    Freelancer->>Web: Click "Approve & Create Proposal"
+    Web->>API: POST /api/v1/proposals (approved_scope_payload)
+    API->>DB: Insert Proposal & Milestones (Status: READY_TO_SEND)
+    API-->>Web: Proposal created with client magic link
 ```
 
-### 4.2 Milestone Escrow & Payment Lifecycle
+### 4.2 Invoice Creation & PayPal Verification Lifecycle
 
 ```mermaid
-stateDiagram-v2
-    [*] --> DRAFT: Freelancer creates scope
-    DRAFT --> PENDING_DEPOSIT: Sent to client
-    PENDING_DEPOSIT --> IN_ESCROW: Client funds milestone via Stripe
-    IN_ESCROW --> IN_PROGRESS: Freelancer begins work
-    IN_PROGRESS --> UNDER_REVIEW: Freelancer submits deliverable
-    UNDER_REVIEW --> APPROVED: Client accepts deliverable
-    UNDER_REVIEW --> REVISION_REQUESTED: Client requests change
-    REVISION_REQUESTED --> UNDER_REVIEW: Freelancer updates deliverable
-    APPROVED --> ESCROW_RELEASED: Stripe transfer funds to Freelancer account
-    ESCROW_RELEASED --> [*]: Milestone Closed
+sequenceDiagram
+    autonumber
+    actor Client
+    participant Portal as Client Portal (React)
+    participant API as FastAPI Backend
+    participant PayPal as PayPal REST API
+    participant DB as Supabase PostgreSQL
+
+    Note over Client,Portal: Milestone completed or upfront payment due
+    Client->>Portal: View Invoice in Client Portal
+    Client->>Portal: Click "Pay with PayPal"
+    Portal->>API: POST /api/v1/payments/create-order (invoice_id)
+    API->>PayPal: Create Order (amount, currency, invoice_reference)
+    PayPal-->>API: Order ID (APPROVED status pending)
+    API-->>Portal: Order ID
+    Client->>Portal: Completes payment in PayPal Modal
+    Portal->>API: POST /api/v1/payments/capture-order (order_id, invoice_id)
+    API->>PayPal: Capture Order
+    PayPal-->>API: Capture Confirmed (Transaction ID, Payer Info)
+    API->>DB: Record Payment (status: COMPLETED) & Update Invoice (status: PAID)
+    API-->>Portal: Payment Receipt Confirmed
 ```
 
 ---
 
 ## 5. Security & Isolation Boundaries
 
-1. **Role-Based Tenant Segregation**:
-   - Freelancer data is scoped to `freelancer_id`.
-   - Client access is strictly governed by single-use or time-bound cryptographic magic tokens (`token_hash` checked on every request).
-2. **Financial State Machine Invariance**:
-   - Escrow states (`IN_ESCROW` → `ESCROW_RELEASED`) are transitioned strictly within database transactions and verified against Stripe webhook idempotency keys.
-3. **Prompt Injection & Data Sanitization**:
-   - Raw user input is sanitized before passing to AI context. System prompts strictly enforce JSON schema compliance.
+1. **Role-Based Tenant Segregation:**
+   - Freelancer accounts are validated via Supabase JWT claims (`role = 'freelancer'`).
+   - Client portal access is restricted by unique project/proposal magic tokens (`token_hash`) or client-authenticated sessions.
+2. **Supabase Row-Level Security (RLS):**
+   - Database policies enforce that freelancers access only their own clients, proposals, projects, and invoices.
+3. **PayPal Webhook Signature Verification:**
+   - Webhook events are cryptographically verified using PayPal SDK certificate verification before triggering invoice updates.
+4. **AI Safety:**
+   - Untrusted inputs are isolated within delimited system instructions, and Groq responses are strictly validated through Pydantic schemas before rendering.

@@ -1,105 +1,122 @@
 # Scope2Pay AI — Security & Compliance Architecture
 
-**Version:** 1.0.0  
+**Version:** 2.0.0  
 **Status:** Approved for Phase 0  
-**Reference Document:** [ARCHITECTURE.md](./ARCHITECTURE.md) | [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
+**Reference Documents:** [ARCHITECTURE.md](./ARCHITECTURE.md) | [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)
 
 ---
 
 ## 1. Security Philosophy
 
-Scope2Pay AI handles both sensitive business contracts and direct financial escrow transactions. Security is therefore treated as a core architectural constraint rather than an afterthought. The platform implements a **Defense-in-Depth** model spanning client magic links, transactional data isolation, payment safeguards, and AI prompt boundaries.
+Scope2Pay AI facilitates business-critical proposals, invoices, and financial transaction verification. The security model enforces **Defense-in-Depth** across identity, database isolation, payment integrity, and AI boundaries:
+1. **Zero-Trust Identity**: Supabase Auth JWTs for freelancers; cryptographically hashed magic tokens for clients.
+2. **Database-Enforced Multi-Tenancy**: Supabase Row-Level Security (RLS) guarantees data isolation at the storage layer.
+3. **PCI-Compliant Invoice Settlement**: Complete offloading of cardholder data handling to the PayPal REST API.
+4. **Guaranteed Human-in-the-Loop AI**: AI generation is gated behind mandatory human review, eliminating autonomous hallucination or unauthorized communication.
 
 ---
 
 ## 2. Authentication & Authorization
 
-### 2.1 Freelancer Sessions
-- **Protocol**: PKCE OAuth 2.0 / Passwordless Magic Links with short-lived access tokens (15 minutes) and rotating refresh tokens (7 days).
-- **Storage**: Tokens are stored strictly in `HttpOnly`, `SameSite=Lax`, `Secure` cookies to eliminate XSS token theft vectors.
-- **CSRF Protection**: State tokens and custom request headers (`x-requested-with`) validated on all mutating Server Actions and API calls.
+### 2.1 Freelancer Identity & Session Security
+- **Identity Provider:** Supabase Auth (Email/Password, OAuth providers).
+- **Session Tokens:** JWTs containing user claims (`sub`, `email`, `role`).
+- **Backend Verification:** FastAPI middleware validates the JWT cryptographic signature against the Supabase Project JWT Secret on every protected endpoint:
+```python
+# FastAPI JWT verification snippet
+from fastapi import HTTPException, Security, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
 
-### 2.2 Client Portal Token Cryptography
-Clients access their project review and payment interface via tokenized links without account friction.
-- **Token Generation**: High-entropy 256-bit cryptographic secrets generated using `crypto.randomBytes(32).toString('hex')`.
-- **Database Storage**: Raw tokens are **never** stored in plaintext. The database persists only a SHA-256 hash:
+security = HTTPBearer()
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Security(security)):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
+        return payload
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+```
+
+### 2.2 Client Portal Magic Link Cryptography
+Clients access proposals, invoices, and messaging through friction-free tokenized links:
+- **Token Generation:** Generated via Python `secrets.token_urlsafe(32)` providing 256 bits of cryptographic entropy.
+- **Database Hashing:** Plaintext tokens are **never** stored in the database. Only a SHA-256 hash is persisted:
   $$\text{StoredHash} = \text{SHA256}(\text{RawToken} + \text{Salt})$$
-- **Expiration & Revocation**: Magic tokens expire after 30 days or immediately upon explicit regeneration by the freelancer.
-- **Rate-Limiting**: IP-based rate limiting (max 10 requests per minute) prevents brute-force token enumeration.
+- **Expiration & Single-Use Options:** Tokens carry expiration timestamps (`magic_token_expires_at`) and can be regenerated or revoked at any time by the freelancer.
+- **Rate-Limiting:** FastAPI rate-limits portal endpoints using IP-based throttling (maximum 10 requests per minute) to thwart brute-force token enumeration.
 
 ---
 
-## 3. Financial & Escrow Safeguards
+## 3. Database Multi-Tenant Isolation (Supabase RLS)
 
-### 3.1 Stripe Connect & PCI Scope Reduction
-- **Zero Cardholder Data Storage**: No credit card numbers, CVVs, or bank account details ever touch Scope2Pay servers. All payment collection uses Stripe Elements and Stripe Checkout (PCI DSS SAQ A compliant).
-- **Webhook Authenticity**: Every incoming Stripe webhook is cryptographically verified against the raw request payload using `stripe.webhooks.constructEvent(payload, signature, endpointSecret)`.
-- **Idempotency Keys**: All financial state mutations (holds, transfers, refunds) employ deterministic idempotency keys:
-  `scope2pay_release_<milestone_id>_<timestamp>` to guarantee that network retries cannot cause double payouts.
+Data segregation is enforced at the database level using Supabase Row-Level Security (RLS), rendering accidental data leaks across tenants impossible even in the event of an application logic defect:
 
-### 3.2 Escrow State Machine Lock
-- Escrow fund releases are executed within an atomic database transaction.
-- Status transition requires:
-  1. Verified client signature / authorization.
-  2. Database state check: Milestone must be `UNDER_REVIEW` and Escrow `FUNDED`.
-  3. Pre-flight verification of the Freelancer's Stripe Connected Account status.
-  4. Execution of Stripe Transfer, followed by updating database to `RELEASED`.
-
----
-
-## 4. AI Security & Prompt Injection Mitigation
-
-### 4.1 Input Sanitization & Threat Modeling
-- **Indirect Prompt Injection**: When analyzing inbound client messages or external RFPs for scope creep, user text is treated as untrusted data.
-- **Context Isolation**: Untrusted user text is enclosed in strict XML tags (`<user_submission>...</user_submission>`) within system prompts, with explicit instructions forbidding the LLM from executing commands inside those tags.
-
-### 4.2 Structured Output Enforcement
-- The AI scoping engine exclusively uses JSON Schema / Zod schema validation:
-```typescript
-import { z } from "zod";
-
-export const ScopeOutputSchema = z.object({
-  title: z.string().max(100),
-  summary: z.string().max(1000),
-  milestones: z.array(z.object({
-    title: z.string().max(100),
-    amount: z.number().positive(),
-    deliverables: z.array(z.string().max(200)),
-    acceptanceCriteria: z.string().max(500),
-  })).min(1).max(15),
-  outOfScopeTerms: z.array(z.string().max(200)),
-});
-```
-- If an LLM response fails schema validation, it is rejected and never persisted to the database.
-
----
-
-## 5. Multi-Tenant Data Isolation & Database Security
-
-### 5.1 Row-Level Security (RLS)
-PostgreSQL Row-Level Security policies are enforced at the database layer:
 ```sql
--- Example RLS for Projects Table
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-
--- Freelancers can only view/modify their own projects
-CREATE POLICY freelancer_project_isolation ON projects
+-- Enforce that a freelancer can ONLY view, update, or delete their own proposals
+CREATE POLICY freelancer_proposal_isolation ON proposals
     FOR ALL
-    USING (freelancer_id = auth.uid());
+    USING (auth.uid() = freelancer_id);
 
--- Public client portal access via verified token hash only
-CREATE POLICY client_portal_read ON projects
+-- Enforce client portal access strictly via verified magic token
+CREATE POLICY client_portal_proposal_read ON proposals
     FOR SELECT
-    USING (magic_token = current_setting('request.jwt.claims', true)::json->>'token_hash');
+    USING (
+        magic_token = current_setting('request.jwt.claims', true)::json->>'portal_token'
+        OR auth.uid() = freelancer_id
+    );
 ```
 
 ---
 
-## 6. Audit Trail & Incident Response
+## 4. Payment Security & PayPal Integration
 
-- Every sensitive lifecycle event (`SCOPE_AMENDED`, `FUNDS_DEPOSITED`, `FUNDS_RELEASED`, `CLIENT_MAGIC_ACCESSED`) logs an immutable entry to `audit_logs` capturing:
-  - Timestamp (UTC)
-  - Actor Identity & IP Address
-  - Action Identifier
-  - Cryptographic hash of the snapshot payload
-- In the event of a dispute, this audit trail provides verifiable evidence for arbitration.
+### 4.1 PCI DSS Compliance Scope
+- **Zero Card Data Storage:** No credit card numbers, CVVs, expiration dates, or bank account credentials pass through or reside on Scope2Pay servers.
+- **Client Checkout:** Payments are processed entirely via PayPal Smart Payment Buttons and PayPal-hosted modal dialogs (PCI DSS SAQ A compliant).
+
+### 4.2 Webhook Signature & Authenticity Verification
+- Every incoming webhook from PayPal is validated against the PayPal REST API verification endpoint (`v1/notifications/verify-webhook-signature`):
+```python
+async def verify_paypal_webhook(request_body: bytes, headers: dict) -> bool:
+    verification_payload = {
+        "transmission_id": headers.get("paypal-transmission-id"),
+        "transmission_time": headers.get("paypal-transmission-time"),
+        "cert_url": headers.get("paypal-cert-url"),
+        "auth_algo": headers.get("paypal-auth-algo"),
+        "transmission_sig": headers.get("paypal-transmission-sig"),
+        "webhook_id": PAYPAL_WEBHOOK_ID,
+        "webhook_event": json.loads(request_body)
+    }
+    # Verify signature against PayPal's verification service
+    response = await paypal_client.post("/v1/notifications/verify-webhook-signature", json=verification_payload)
+    return response.json().get("verification_status") == "SUCCESS"
+```
+
+### 4.3 Idempotency & Duplicate Payment Prevention
+- All payment capture calls generate a deterministic order verification key: `order_capture_<invoice_id>_<paypal_order_id>`.
+- Invoices are checked for an existing `PAID` status inside a database transaction before any capture status is confirmed, preventing double-crediting or duplicate processing.
+
+---
+
+## 5. AI Safety & Human-in-the-Loop Safeguards
+
+### 5.1 Prompt Injection Defense
+- Untrusted user input (raw client emails, RFP text) is quarantined inside XML delimiters (`<client_input>...</client_input>`) in Groq API prompts.
+- System instructions explicitly mandate that the LLM ignore any commands, system overrides, or instructions contained within those delimiters.
+
+### 5.2 Schema Validation Gate
+- Groq model outputs are parsed through strict Pydantic schemas in FastAPI. Any response containing unexpected keys, malformed JSON, or invalid data types is rejected before reaching the client.
+
+### 5.3 Mandatory Human Approval Gate
+- **Zero Autonomous Dispatch:** Proposals, milestones, and contract terms drafted by Groq are stored in `DRAFT` status with `human_approved = false`.
+- Only an authenticated freelancer can review, modify, and explicitly toggle `human_approved = true` to promote the proposal to `READY_TO_SEND` or `SENT`.
+
+---
+
+## 6. Infrastructure & Network Security
+
+- **Frontend on Vercel:** Automatic TLS 1.3, DDoS protection, edge caching, and strict HTTP Content Security Policy (CSP) headers.
+- **Backend on Render:** Hosted behind HTTPS reverse proxies, isolated runtime environments, and secret environment variables for API keys (`SUPABASE_KEY`, `GROQ_API_KEY`, `PAYPAL_CLIENT_SECRET`).
+- **Database on Supabase:** Encrypted at rest using AES-256 and encrypted in transit via TLS.
